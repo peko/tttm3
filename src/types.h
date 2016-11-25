@@ -1,6 +1,6 @@
 #pragma once
 
-#include "kvec.h"
+#include "../dep/klib/kvec.h"
 
 typedef kvec_t(char*) strings_v;
 

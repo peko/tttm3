@@ -12,7 +12,6 @@
 
 #include "gui.h"
 
-
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
 #define NK_INCLUDE_DEFAULT_ALLOCATOR
@@ -79,8 +78,6 @@ gui_logic(int width, int height) {
         NK_WINDOW_TITLE       |
         0)) {
         
-        struct nk_panel tab;
-
         nk_layout_row_dynamic(ctx, 400, 1);
         if (nk_group_begin(ctx, "Group_Without_Border", 0)) {
             nk_layout_row_dynamic(ctx, 16, 2);

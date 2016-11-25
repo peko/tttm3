@@ -8,7 +8,7 @@
 #include <GLFW/glfw3.h>
 
 #include "types.h"
-#include "linmath.h"
+#include "../dep/linmath.h"
 #include "shape.h"
 #include "grid.h"
 #include "gui.h"

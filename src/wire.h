@@ -2,7 +2,7 @@
 
 #include <stdbool.h>
 
-#include "linmath.h"
+#include "../dep/linmath.h"
 #include "types.h"
 #include "vbo.h"
 

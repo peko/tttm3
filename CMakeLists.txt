@@ -28,7 +28,9 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall")
 # Include dirs
 include_directories(
         src
+        dep/
         dep/glad
+        dep/klib
         ${GLFW_INCLUDE_DIRS}
         ${GLU_INCLUDE_DIRS}
         ${NUK} ${NUK}/demo/glfw_opengl2
