@@ -41,30 +41,30 @@ shape_load_countries(const char* filename) {
         shapes.min = (point_t){shp->dfXMin, shp->dfYMin};
         shapes.max = (point_t){shp->dfXMax, shp->dfYMax};
 
-        uint32_t parts = shp->nParts;
-        double k = 0.0;
-        for (uint32_t j=0; j<parts; j++) {
+        int parts = shp->nParts;
+        double cum = 0.0;
+        for (int j=0; j<parts; j++) {
             // start index
-            uint32_t s = shp->panPartStart[j];
+            int s = shp->panPartStart[j];
             // end index - start of next minus one, or end
-            uint32_t e = (j+1 < parts) ?
+            int e = (j+1 < parts) ?
                 shp->panPartStart[j+1]:
                 shp->nVertices;
             shape_v shape;
             kv_init(shape);
             // collect points of part
-            for(uint32_t i=s; i<e; i++){
-                point_t p = (point_t){shp->padfX[i], shp->padfY[i]};
+            for(int k=s; k<e; k++){
+                point_t p = (point_t){shp->padfX[k], shp->padfY[k]};
                 kv_push(point_t, shape, p);
-                // cumulitive average for center
-                if(k>=1.0) {
-                    shapes.center.x = (k-1.0)/k*shapes.center.x + p.x/k;
-                    shapes.center.y = (k-1.0)/k*shapes.center.y + p.y/k;
-                }else {
+                // cumulative average for center
+                if(cum>=1.0) {
+                    shapes.center.x = (cum-1.0)/cum*shapes.center.x + p.x/cum;
+                    shapes.center.y = (cum-1.0)/cum*shapes.center.y + p.y/cum;
+                } else {
                     shapes.center.x = p.x;
                     shapes.center.y = p.y;
                 }
-                k+=1.0;
+                cum+=1.0;
             }
             kv_push(shape_v, shapes, shape);
         }
@@ -107,19 +107,19 @@ shape_load_globe(const char* filename) {
         if(shp->panPartStart[0] != 0) goto end_loading;
 
         // collect parts of country
-        uint32_t parts = shp->nParts;
-        for (uint32_t j=0; j<parts; j++) {
+        int parts = shp->nParts;
+        for (int j=0; j<parts; j++) {
             // start index
-            uint32_t s = shp->panPartStart[j];
+            int s = shp->panPartStart[j];
             // end index - start of next minus one, or end
-            uint32_t e = (j+1 < parts) ?
+            int e = (j+1 < parts) ?
                 shp->panPartStart[j+1]:
                 shp->nVertices;
             shape_v shape;
             kv_init(shape);
             // collect points of part
-            for(uint32_t i=s; i<e; i++){
-                point_t p = (point_t){shp->padfX[i], shp->padfY[i]};
+            for(int k=s; k<e; k++){
+                point_t p = (point_t){shp->padfX[k], shp->padfY[k]};
                 kv_push(point_t, shape, p);
             }
             kv_push(shape_v, globe, shape);
@@ -190,8 +190,20 @@ shape_proj(
     return shapes_prj;
 }
 
+// missing in string.h
+static
+char*
+strdup(const char* s) {
+    char* p = malloc(strlen(s)+1);
+    if (p) strcpy(p, s);
+    return p;
+}
+
+// Country name loader DBF
 strings_v
-shape_load_names(const char* filename, const char* colname) {
+shape_load_names(
+        const char* filename,
+        const char* colname) {
 
     DBFHandle hDBF;
     strings_v col;
@@ -202,8 +214,8 @@ shape_load_names(const char* filename, const char* colname) {
         fprintf(stderr, "DBFOpen(%s,\"r\") failed.\n", filename );
         return col;
     }
-    uint32_t fid = DBFGetFieldIndex(hDBF, colname);
-    for(uint32_t i = 0; i < DBFGetRecordCount(hDBF); i++ ) {
+    int fid = DBFGetFieldIndex(hDBF, colname);
+    for(int i = 0; i < DBFGetRecordCount(hDBF); i++ ) {
         char* str = (char *) DBFReadStringAttribute(hDBF, i, fid);
         if(str != NULL)
             kv_push(char*, col, strdup(str));
