@@ -11,6 +11,7 @@
 #include "../dep/linmath.h"
 #include "shape.h"
 #include "grid.h"
+#include "cursor.h"
 #include "gui.h"
 #include "wire.h"
 #include "vbo.h"
@@ -96,7 +97,9 @@ main(int argc, char** argv) {
 
         if(country_vbo.id != 0)
             wire_draw(&country_vbo,(vec3){1.0,1.0,1.0}, ratio, 0.0, 0.0, scale, true);
-
+	
+	cursor_draw();
+	
         glfwPollEvents();
 
         gui_logic(width, height);
@@ -139,7 +142,8 @@ on_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
 }
 
 static void 
-on_mouse(GLFWwindow* window, double xpos, double ypos){
+on_mouse(GLFWwindow* window, double xpos, double ypos) {
+    cursor_setpos(xpos, ypos);
 }
 
 static void 

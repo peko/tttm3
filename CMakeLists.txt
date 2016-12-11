@@ -40,6 +40,8 @@ set(SOURCE_FILES
         src/main.c
         src/types.c
         src/grid.c
+        src/cursor.c
+        src/projection.c
         src/gui.c
         src/shape.c
         src/text.c
