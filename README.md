@@ -2,10 +2,12 @@
 
 Building:
 
-- git clone
-- git submodule init
-- git submodule update
-- mkdir build
-- cd build
-- cmake ..
-- make -j8
+'''
+git clone https://github.com/peko/tttm3
+git submodule init
+git submodule update
+mkdir build
+cd build
+cmake ..
+make -j8
+'''
