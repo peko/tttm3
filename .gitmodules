@@ -1,0 +1,9 @@
+[submodule "klib"]
+	path = dep/klib
+	url = https://github.com/attractivechaos/klib
+[submodule "nuklear"]
+	path = dep/nuklear
+	url = https://github.com/vurtun/nuklear
+[submodule "dep/cimgui"]
+	path = dep/cimgui
+	url = https://github.com/Extrawurst/cimgui
