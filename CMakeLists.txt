@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 project(tttm3)
 
 # DEPENDENCIES
+include(CMakeDependencies.txt)
 
 # GLFW
 find_package(PkgConfig REQUIRED)
