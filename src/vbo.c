@@ -27,9 +27,9 @@ vbo_new(shapes_v* shapes) {
 
     // send buffer to vram
     glGenBuffers(1, &vbo.id);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo.id);    
-    glBufferData(GL_ARRAY_BUFFER, 
-        vbo.vertices * sizeof(vertex_t), 
+    glBindBuffer(GL_ARRAY_BUFFER, vbo.id);
+    glBufferData(GL_ARRAY_BUFFER,
+        vbo.vertices * sizeof(vertex_t),
         vertices, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     return vbo;

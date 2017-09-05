@@ -52,9 +52,10 @@ gui_init(
 
     /* GUI */
     ctx = nk_glfw3_init(win, NK_GLFW3_INSTALL_CALLBACKS);
-    {struct nk_font_atlas *atlas;
-    nk_glfw3_font_stash_begin(&atlas);
-    nk_glfw3_font_stash_end();
+    {
+	struct nk_font_atlas *atlas;
+    	nk_glfw3_font_stash_begin(&atlas);
+    	nk_glfw3_font_stash_end();
     }
 
     background = nk_rgb(28,48,62);
@@ -101,7 +102,7 @@ gui_logic(int width, int height) {
 
 void 
 gui_draw() {
-    nk_glfw3_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_BUFFER, MAX_ELEMENT_BUFFER);
+    nk_glfw3_render(NK_ANTI_ALIASING_ON);
 }
 
 void 

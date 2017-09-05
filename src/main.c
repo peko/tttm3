@@ -1,4 +1,3 @@
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -40,12 +39,16 @@ static vbo_t globe_vbo   = (vbo_t){0};
 static int current_country = 0;
 
 static double scale = 1.0;
+
 int 
 main(int argc, char** argv) {
 
     GLFWwindow* window;
 
-    printf("GLFW %d.%d.%d\n", GLFW_VERSION_MAJOR, GLFW_VERSION_MINOR, GLFW_VERSION_REVISION);
+    printf("GLFW %d.%d.%d\n",
+            GLFW_VERSION_MAJOR,
+            GLFW_VERSION_MINOR,
+            GLFW_VERSION_REVISION);
 
     glfwSetErrorCallback(on_error);
 

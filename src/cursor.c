@@ -10,7 +10,7 @@ void cursor_setpos(float x, float y){
 };
 
 void cursor_draw() {
-    for (int i=0; i<10; i++) {
-        printf("%d", i); 
-    }
+    // for (int i=0; i<10; i++) {
+    //     printf("%d", i); 
+    // }
 };
