@@ -10,6 +10,7 @@
 #include <limits.h>
 #include <time.h>
 
+#include "engine.h"
 #include "gui.h"
 
 #define NK_INCLUDE_FIXED_TYPES
@@ -33,37 +34,38 @@
 #define MAX(a,b) ((a) < (b) ? (b) : (a))
 #define LEN(a) (sizeof(a)/sizeof(a)[0])
 
-
 struct nk_context *ctx;
-struct nk_color background;
-
-static strings_v country_names;
-
+struct nk_color   background;
+static strings_v  country_names;
 static void (*on_country)(int) = NULL;
 
+extern GLFWwindow* window;
+
+// 
 void 
 gui_init(
-    GLFWwindow* win, 
     strings_v*  names,
     void (*callback)(int)) {
 
     country_names = *names;
-    on_country = callback;
+    on_country    = callback;
 
     /* GUI */
-    ctx = nk_glfw3_init(win, NK_GLFW3_INSTALL_CALLBACKS);
+    ctx = nk_glfw3_init(window, NK_GLFW3_INSTALL_CALLBACKS);
     {
-	struct nk_font_atlas *atlas;
+        struct nk_font_atlas *atlas;
     	nk_glfw3_font_stash_begin(&atlas);
     	nk_glfw3_font_stash_end();
     }
 
-    background = nk_rgb(28,48,62);
+    background = nk_rgb(28, 48, 62);
 }
 
 
 void 
-gui_logic(int width, int height) {
+gui_logic(
+    int width, 
+    int height) {
 
     static int selected_country = -1; 
     

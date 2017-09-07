@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.6)
 project(tttm3)
 
-# DEPENDENCIES
-include(CMakeDependencies.txt)
-
 # GLFW
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GLFW REQUIRED glfw3)
@@ -13,9 +10,6 @@ pkg_search_module(GLU REQUIRED glu)
 
 # NUKLEAR GUI
 set(NUK dep/nuklear)
-
-# SHAPE LIB
-set(SHP dep/shapelib-1.3.0)
 
 # library search path
 set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig")
@@ -34,11 +28,11 @@ include_directories(
         dep/klib
         ${GLFW_INCLUDE_DIRS}
         ${GLU_INCLUDE_DIRS}
-        ${NUK} ${NUK}/demo/glfw_opengl2
-        $(shp))
+        ${NUK} ${NUK}/demo/glfw_opengl2)
 
 set(SOURCE_FILES
         src/main.c
+        src/engine.c
         src/types.c
         src/grid.c
         src/cursor.c
@@ -51,12 +45,12 @@ set(SOURCE_FILES
 
 add_executable(tttm3 ${SOURCE_FILES})
 
-add_subdirectory(dep/shapelib-1.3.0)
+# add_subdirectory(dep/shapelib-1.3.0)
 add_subdirectory(dep/glad)
 target_link_libraries(
         tttm3
         glad
         ${GLFW_LIBRARIES}
         ${GLU_LIBRARIES}
-        shapelib proj m)
+        shp proj m)
 

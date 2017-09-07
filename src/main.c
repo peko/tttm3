@@ -3,9 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "glad/glad.h"
-#include <GLFW/glfw3.h>
-
+#include "engine.h"
 #include "types.h"
 #include "../dep/linmath.h"
 #include "shape.h"
@@ -15,13 +13,6 @@
 #include "wire.h"
 #include "vbo.h"
 
-static void on_error  (int error, const char* description);
-static void on_key    (GLFWwindow* window, int key, int scancode, int action, int mods);
-static void on_mouse  (GLFWwindow* window, double xpos, double ypos);
-static void on_click  (GLFWwindow* window, int button, int action, int mods);
-static void on_scroll (GLFWwindow* window, double xoffset, double yoffset);
-static void on_country(int cid);
-
 static void next_country();
 static void prev_country();
 static void set_country(int cid);
@@ -29,88 +20,46 @@ static void set_country(int cid);
 static void mesh_country();
 
 static countries_v countries;
-static shapes_v globe;
-static strings_v names;
+static shapes_v    globe;
+static strings_v   names;
 
 static vbo_t grid_vbo    = (vbo_t){0};
 static vbo_t country_vbo = (vbo_t){0};
 static vbo_t globe_vbo   = (vbo_t){0};
 
 static int current_country = 0;
-
 static double scale = 1.0;
 
+extern loop_cb engine_on_loop;
+extern key_cb  engine_on_key;
+
+static void on_country(int cid);
+static void on_loop(int width, int height);
+static void on_key(int key, int action);
+
 int 
-main(int argc, char** argv) {
+main(
+	int argc, 
+	char** argv) {
 
-    GLFWwindow* window;
-
-    printf("GLFW %d.%d.%d\n",
-            GLFW_VERSION_MAJOR,
-            GLFW_VERSION_MINOR,
-            GLFW_VERSION_REVISION);
-
-    glfwSetErrorCallback(on_error);
-
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_FLOATING, GLFW_TRUE);
-
-    window = glfwCreateWindow(800, 600, "show mesh", NULL, NULL);
-    if (!window) {
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    glfwSetKeyCallback        (window, on_key   );
-    glfwSetScrollCallback     (window, on_scroll);
-    glfwSetCursorPosCallback  (window, on_mouse );
-    glfwSetMouseButtonCallback(window, on_click );
-
-    glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-    glfwSwapInterval(1);
-
+    // INIT
+    engine_init();
+    
     countries = shape_load_countries("data/10m.shp");
-    globe = shape_load_globe("data/110m.shp");
-    names = shape_load_names("data/10m.dbf", "name_long");
+    globe     = shape_load_globe("data/110m.shp");
+    names     = shape_load_names("data/10m.dbf", "name_long");
 
     wire_init();
-    gui_init(window, &names, on_country);
+    gui_init(&names, on_country);
 
-    while (!glfwWindowShouldClose(window)) {
+	// CALLBACKS 
+    engine_on_loop = on_loop;
+	engine_on_key  = on_key;
 
-        float ratio;
-        int width, height;
-
-        glfwGetFramebufferSize(window, &width, &height);
-        ratio = width / (float) height;
-
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        if(globe_vbo.id != 0)
-            wire_draw(&globe_vbo,(vec3){0.15,0.15,0.15}, ratio, 0.0, 0.0, scale, true);
-
-        if(grid_vbo.id != 0)
-            wire_draw(&grid_vbo,(vec3){0.25,0.25,0.25}, ratio, 0.0, 0.0, scale, false);
-
-        if(country_vbo.id != 0)
-            wire_draw(&country_vbo,(vec3){1.0,1.0,1.0}, ratio, 0.0, 0.0, scale, true);
-	
-	cursor_draw();
-	
-        glfwPollEvents();
-
-        gui_logic(width, height);
-        gui_draw();
-
-        glfwSwapBuffers(window);
-    }
-
+    // LOOP
+    engine_loop();
+    
+    // EXIT
     if(country_vbo.id != 0) vbo_destroy(&country_vbo);
     if(grid_vbo.id    != 0) vbo_destroy(&grid_vbo);
 
@@ -121,42 +70,39 @@ main(int argc, char** argv) {
     gui_cleanup();
     wire_cleanup();
 
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    engine_exit();
     
     exit(EXIT_SUCCESS);
 }
 
-
 static void 
-on_error(int error, const char* description) {
+on_loop(
+	int width,
+	int height) {
+    	
+    double ratio = (double)width/(double)height;
+
+    if(globe_vbo.id   != 0) wire_draw(&globe_vbo  ,(vec3){0.15,0.15,0.15}, ratio, 0.0, 0.0, scale, true );
+    if(grid_vbo.id    != 0) wire_draw(&grid_vbo   ,(vec3){0.25,0.25,0.25}, ratio, 0.0, 0.0, scale, false);
+    if(country_vbo.id != 0) wire_draw(&country_vbo,(vec3){1.00,1.00,1.00}, ratio, 0.0, 0.0, scale, true );
+
+	gui_logic(width, height);
+    gui_draw();
 }
 
-static void 
-on_key(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
+static void
+on_key(
+	int key, 
+	int action) {
+
+	// printf("key: %d\n", key);
+
     if (key == 46 && action == GLFW_PRESS)
         next_country();
     if (key == 44 && action == GLFW_PRESS)
         prev_country();
     if (key == GLFW_KEY_M && action == GLFW_PRESS)
         mesh_country();
-}
-
-static void 
-on_mouse(GLFWwindow* window, double xpos, double ypos) {
-    cursor_setpos(xpos, ypos);
-}
-
-static void 
-on_click(GLFWwindow* window, int button, int action, int mods) {
-}
-
-static void 
-on_scroll(GLFWwindow* window, double xoffset, double yoffset) {
-    printf("%f %f\n", xoffset, yoffset);
-    scale *= 1.1*yoffset;
 }
 
 static void 
